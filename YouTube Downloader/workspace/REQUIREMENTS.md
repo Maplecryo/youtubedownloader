@@ -258,6 +258,3 @@ ffmpeg-python>=0.2.0
 - [ ] Application runs without modification on macOS, Windows, and Linux
 
 ---
-
-*Generated for use as a Claude Code prompt / project specification.*
-*Feed this file to Claude Code with: "Implement the application described in REQUIREMENTS.md"*
