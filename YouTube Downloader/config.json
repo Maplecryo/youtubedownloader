@@ -1,0 +1,17 @@
+{
+  "output_dir": "/Users/admin/Downloads",
+  "filename_template": "testvideo",
+  "sanitize_filenames": true,
+  "duplicate_handling": "auto_rename",
+  "max_concurrent": 1,
+  "speed_limit": "",
+  "proxy_url": "",
+  "ffmpeg_path": "",
+  "use_cookies": "none",
+  "embed_metadata": true,
+  "embed_thumbnail": true,
+  "preferred_video_codec": "any",
+  "theme": "System",
+  "window_geometry": "",
+  "disclaimer_shown": true
+}
