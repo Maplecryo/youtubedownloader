@@ -120,6 +120,7 @@ class MainWindow(ctk.CTk):
         self._manager = DownloadManager(self._queue)
         self._fetch_cancel = threading.Event()
         self._metadata: Optional[VideoMetadata] = None
+        self._fetch_gen = 0
 
         self._setup_ui()
         self._bind_shortcuts()
@@ -227,15 +228,18 @@ class MainWindow(ctk.CTk):
     # ------------------------------------------------------------------
 
     def _on_fetch(self, url: str) -> None:
+        self._fetch_cancel.set()
         self._fetch_cancel.clear()
+        self._fetch_gen += 1
+        gen = self._fetch_gen
         self.url_bar.set_loading(True)
         self.preview.clear()
         self._metadata = None
         logger.info(f"Fetching metadata for: {url}")
         fetch_metadata(
             url,
-            on_success=lambda meta: self.after(0, lambda: self._fetch_success(meta)),
-            on_error=lambda msg: self.after(0, lambda: self._fetch_error(msg)),
+            on_success=lambda meta: self.after(0, lambda: self._fetch_success(meta, gen)),
+            on_error=lambda msg: self.after(0, lambda: self._fetch_error(msg, gen)),
             cancel_event=self._fetch_cancel,
         )
 
@@ -243,7 +247,9 @@ class MainWindow(ctk.CTk):
         self._fetch_cancel.set()
         self.url_bar.set_loading(False)
 
-    def _fetch_success(self, meta: VideoMetadata) -> None:
+    def _fetch_success(self, meta: VideoMetadata, gen: int) -> None:
+        if gen != self._fetch_gen:
+            return
         self.url_bar.set_loading(False)
         self._metadata = meta
         if meta.is_playlist:
@@ -254,7 +260,9 @@ class MainWindow(ctk.CTk):
         else:
             self.preview.update_metadata(meta)
 
-    def _fetch_error(self, msg: str) -> None:
+    def _fetch_error(self, msg: str, gen: int) -> None:
+        if gen != self._fetch_gen:
+            return
         self.url_bar.set_loading(False)
         self.url_bar.show_error(msg)
         logger.warning(f"Fetch error: {msg}")

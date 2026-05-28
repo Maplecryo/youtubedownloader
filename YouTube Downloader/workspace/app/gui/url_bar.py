@@ -101,6 +101,8 @@ class URLBar(ctk.CTkFrame):
         self._fetch()
 
     def _fetch(self) -> None:
+        if self._loading:
+            return
         url = self.url_var.get().strip()
         if not is_valid_youtube_url(url):
             self.show_error("Please enter a valid YouTube URL.")
